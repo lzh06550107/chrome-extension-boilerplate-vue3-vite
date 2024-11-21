@@ -1,0 +1,20 @@
+{
+  "name": "@extension/vite-config",
+  "version": "0.0.1",
+  "description": "chrome extension - vite base configuration",
+  "main": "index.mjs",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean:node_modules": "pnpx rimraf node_modules",
+    "clean": "pnpm clean:node_modules"
+  },
+  "devDependencies": {
+    "@extension/hmr": "workspace:*",
+    "@extension/tsconfig": "workspace:*",
+    "@vitejs/plugin-vue": "5.2.0",
+    "@vitejs/plugin-vue-jsx": "4.1.0",
+    "@vue/compiler-sfc": "3.5.13",
+    "deepmerge": "^4.3.1"
+  }
+}
