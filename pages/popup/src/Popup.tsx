@@ -1,8 +1,9 @@
-import '@src/Popup.css';
-import { useStorage, withErrorBoundary, withSuspense } from '@extension/shared';
+import { defineComponent, computed } from 'vue';
+import { useStorage } from '@extension/shared'; // 假设 useStorage 在 Vue 中可用
 import { exampleThemeStorage } from '@extension/storage';
-import type { ComponentPropsWithoutRef } from 'react';
+import '@src/Popup.css';
 
+// notificationOptions 定义
 const notificationOptions = {
   type: 'basic',
   iconUrl: chrome.runtime.getURL('icon-34.png'),
@@ -10,70 +11,91 @@ const notificationOptions = {
   message: 'You cannot inject script here!',
 } as const;
 
-const Popup = () => {
-  const theme = useStorage(exampleThemeStorage);
-  const isLight = theme === 'light';
-  const logo = isLight ? 'popup/logo_vertical.svg' : 'popup/logo_vertical_dark.svg';
-  const goGithubSite = () =>
-    chrome.tabs.create({ url: 'https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite' });
+const Popup = defineComponent({
+  name: 'PopupDemo',
+  setup() {
+    const theme = useStorage(exampleThemeStorage);
+    const isLight = computed(() => theme.value === 'light');
+    const logo = computed(() => (isLight.value ? 'popup/logo_vertical.svg' : 'popup/logo_vertical_dark.svg'));
 
-  const injectContentScript = async () => {
-    const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
+    // 打开 Github 页面
+    const goGithubSite = () => {
+      chrome.tabs.create({ url: 'https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite' });
+    };
 
-    if (tab.url!.startsWith('about:') || tab.url!.startsWith('chrome:')) {
-      chrome.notifications.create('inject-error', notificationOptions);
-    }
+    // 注入内容脚本
+    const injectContentScript = async () => {
+      const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
 
-    await chrome.scripting
-      .executeScript({
-        target: { tabId: tab.id! },
-        files: ['/content-runtime/index.iife.js'],
-      })
-      .catch(err => {
-        // Handling errors related to other paths
-        if (err.message.includes('Cannot access a chrome:// URL')) {
-          chrome.notifications.create('inject-error', notificationOptions);
-        }
-      });
-  };
-
-  return (
-    <div className={`App ${isLight ? 'bg-slate-50' : 'bg-gray-800'}`}>
-      <header className={`App-header ${isLight ? 'text-gray-900' : 'text-gray-100'}`}>
-        <button onClick={goGithubSite}>
-          <img src={chrome.runtime.getURL(logo)} className="App-logo" alt="logo" />
-        </button>
-        <p>
-          Edit <code>pages/popup/src/Popup.tsx</code>
-        </p>
-        <button
-          className={
-            'font-bold mt-4 py-1 px-4 rounded shadow hover:scale-105 ' +
-            (isLight ? 'bg-blue-200 text-black' : 'bg-gray-700 text-white')
-          }
-          onClick={injectContentScript}>
-          Click to inject Content Script
-        </button>
-        <ToggleButton>Toggle theme</ToggleButton>
-      </header>
-    </div>
-  );
-};
-
-const ToggleButton = (props: ComponentPropsWithoutRef<'button'>) => {
-  const theme = useStorage(exampleThemeStorage);
-  return (
-    <button
-      className={
-        props.className +
-        ' ' +
-        'font-bold mt-4 py-1 px-4 rounded shadow hover:scale-105 ' +
-        (theme === 'light' ? 'bg-white text-black shadow-black' : 'bg-black text-white')
+      if (tab.url!.startsWith('about:') || tab.url!.startsWith('chrome:')) {
+        chrome.notifications.create('inject-error', notificationOptions);
       }
-      onClick={exampleThemeStorage.toggle}>
-      {props.children}
-    </button>
-  );
-};
 
-export default withErrorBoundary(withSuspense(Popup, <div> Loading ... </div>), <div> Error Occur </div>);
+      await chrome.scripting
+        .executeScript({
+          target: { tabId: tab.id! },
+          files: ['/content-runtime/index.iife.js'],
+        })
+        .catch(err => {
+          if (err.message.includes('Cannot access a chrome:// URL')) {
+            chrome.notifications.create('inject-error', notificationOptions);
+          }
+        });
+    };
+
+    return () => (
+      <div class={`App ${isLight.value ? 'bg-slate-50' : 'bg-gray-800'}`}>
+        <header class={`App-header ${isLight.value ? 'text-gray-900' : 'text-gray-100'}`}>
+          <button onClick={goGithubSite}>
+            <img src={chrome.runtime.getURL(logo.value)} class="App-logo" alt="logo" />
+          </button>
+          <p>
+            Edit <code>pages/popup/src/Popup.tsx</code>
+          </p>
+          <button
+            class={`font-bold mt-4 py-1 px-4 rounded shadow hover:scale-105 ${
+              isLight.value ? 'bg-blue-200 text-black' : 'bg-gray-700 text-white'
+            }`}
+            onClick={injectContentScript}>
+            Click to inject Content Script
+          </button>
+          <ToggleButton>Toggle theme</ToggleButton>
+        </header>
+      </div>
+    );
+  },
+});
+
+// ToggleButton 组件
+const ToggleButton = defineComponent({
+  name: 'ToggleButton',
+  props: {
+    className: {
+      type: String,
+      default: '',
+    },
+  },
+  setup(props, { slots }) {
+    const theme = useStorage(exampleThemeStorage);
+
+    const buttonClass = computed(() => {
+      return (
+        `${props.className} ` +
+        'font-bold mt-4 py-1 px-4 rounded shadow hover:scale-105 ' +
+        (theme.value === 'light' ? 'bg-white text-black shadow-black' : 'bg-black text-white')
+      );
+    });
+
+    const handleClick = async () => {
+      await exampleThemeStorage.toggle();
+    };
+
+    return () => (
+      <button class={buttonClass.value} onClick={handleClick}>
+        {slots.default ? slots.default() : ''}
+      </button>
+    );
+  },
+});
+
+export default Popup;

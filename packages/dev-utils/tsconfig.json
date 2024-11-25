@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
-    "types": ["chrome"]
+    "types": ["chrome"] // "chrome" 指向的是 @types/chrome 包中定义的类型声明文件。这些类型定义包含了所有与 Chrome 扩展开发相关的 API。如果不配置 "types"，TypeScript 会默认加载项目中所有的 @types/* 类型声明文件
   },
   "include": ["index.ts", "lib"]
 }

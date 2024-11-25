@@ -5,6 +5,7 @@
 import enMessage from '../locales/en/messages.json';
 import koMessage from '../locales/ko/messages.json';
 
+// 提供 getMessageFromLocale(locale) 函数：根据指定语言返回对应的翻译数据
 export function getMessageFromLocale(locale: string) {
   switch (locale) {
     case 'en':

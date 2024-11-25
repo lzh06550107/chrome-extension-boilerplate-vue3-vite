@@ -1,0 +1,190 @@
+= 工具列表
+
+== rimraf
+
+rimraf 是一个用于删除文件和文件夹的 Node.js 工具，尤其适用于删除目录及其内容（包括子目录和文件）。它是一个跨平台的工具，特别有用在 Node.js 项目中，因为它能确保在 Windows、macOS 和 Linux 系统上都能正常工作。
+
+=== 主要功能
+
+* 删除目录及其内容：rimraf 递归地删除整个目录及其中的文件和子目录。
+* 跨平台支持：rimraf 适用于所有平台，解决了 Node.js 原生 fs 模块在 Windows 上不能递归删除目录的问题。
+* 与 rm -rf 类似：rimraf 的功能与 Linux/macOS 系统中的 rm -rf 命令类似，能删除目录及其内容。
+
+=== 安装
+
+你可以通过 npm 或 yarn 安装 rimraf：
+
+[source,bash]
+----
+npm install rimraf --save-dev
+# 或者
+yarn add rimraf --dev
+----
+
+=== 使用示例
+
+[source,javascript]
+----
+const rimraf = require('rimraf');
+
+// 删除单个目录
+rimraf('/path/to/directory', function (err) {
+  if (err) {
+    console.error('Error removing directory', err);
+  } else {
+    console.log('Directory removed successfully');
+  }
+});
+
+// 删除当前目录中的 "dist" 文件夹
+rimraf('./dist', function (err) {
+  if (err) {
+    console.error('Error removing dist folder', err);
+  } else {
+    console.log('dist folder removed');
+  }
+});
+----
+
+=== 在命令行使用
+
+你也可以直接在命令行中使用 rimraf（需要全局安装）：
+
+[source,bash]
+----
+npm install -g rimraf
+rimraf /path/to/directory
+----
+
+=== rimraf 与 fs 的区别
+
+rimraf 是基于 fs 模块构建的，但它提供了递归删除功能，fs 模块中的 rmdir 方法默认不支持递归删除（除非使用 recursive 选项），并且在 Windows 上的删除行为存在一些问题。
+
+因此，rimraf 是 Node.js 开发中常见的删除目录和文件的工具，尤其是在构建工具和清理任务中广泛使用。
+
+== pnpm workspace
+
+pnpm workspace 是 pnpm 提供的一种工具，用于管理和组织 Monorepo（多个包的仓库）。它能够使你在一个仓库中同时管理多个包，并提供高效的依赖管理、共享依赖以及跨包的协作机制。下面将详细介绍 pnpm workspace 的功能和使用方法。
+
+=== pnpm workspace 的核心概念
+
+在 pnpm workspace 中，项目通常由多个子项目（包）组成，每个子项目都有自己的 package.json 文件。pnpm workspace 通过在单一的仓库中管理多个包，使得你可以轻松地在这些包之间共享依赖，并避免重复安装相同的依赖。
+
+主要功能：
+
+* 共享依赖：工作区内的多个包可以共享相同的依赖，避免重复安装依赖。
+* 高效的依赖解析：pnpm 通过符号链接来连接工作区中的包，提高安装和构建效率。
+* 集成其他工具：pnpm workspace 可以和其他工具（如 Turborepo、Lerna）结合使用，增强 monorepo 的管理能力。
+
+=== 工作区配置（pnpm-workspace.yaml）
+
+pnpm workspace 的配置文件是 pnpm-workspace.yaml，该文件位于仓库的根目录，用于定义哪些文件夹属于工作区。在这个配置文件中，你可以指定工作区包含的包路径。
+
+==== 示例
+
+[source,yaml]
+----
+packages:
+  - 'packages/*'
+  - 'apps/*'
+----
+
+上面的配置指定了工作区包含 packages/ 和 apps/ 目录下的所有子包，pnpm 会扫描这些目录，并将它们作为工作区的一部分进行管理。
+
+=== 如何使用 pnpm workspace
+
+* 步骤 1: 初始化工作区
+
+首先，创建一个新的仓库并在根目录下初始化 pnpm workspace。你可以使用以下命令初始化工作区：
+
+[source,bash]
+----
+mkdir my-monorepo
+cd my-monorepo
+pnpm init
+----
+
+然后，创建 pnpm-workspace.yaml 文件并配置工作区：
+
+[source,yaml]
+----
+packages:
+  - 'packages/*'
+  - 'apps/*'
+----
+
+* 步骤 2: 创建多个包
+
+在工作区的目录（如 packages/ 或 apps/）中创建多个子项目。例如：
+
+[source,bash]
+----
+mkdir packages
+cd packages
+pnpm init
+----
+
+在每个子项目中，你都可以创建一个独立的 package.json 文件，定义该包的依赖和配置。
+
+* 步骤 3: 安装依赖
+
+在工作区中运行 pnpm install 会自动安装所有包的依赖，并将共享的依赖链接到工作区中的每个子包。
+
+[source,bash]
+----
+pnpm install
+----
+
+pnpm 会通过符号链接（symlink）将共享依赖链接到每个子包，确保它们的依赖不会重复安装。
+
+* 步骤 4: 在子包之间共享依赖
+
+在 pnpm workspace 中，你可以跨多个包共享依赖。假设你有一个 utils 包和一个 app 包，app 包可以直接依赖 utils 包中的内容，而无需在每个包中分别安装相同的依赖。
+
+例如，在 app/package.json 中：
+
+[source,json]
+----
+{
+  "name": "app",
+  "dependencies": {
+    "utils": "workspace:*"
+  }
+}
+----
+
+utils 包会自动被链接到 app 包中，pnpm 会确保它们共享相同的依赖版本。
+
+=== 工作区中的脚本管理
+
+在工作区中，pnpm 支持跨多个包执行脚本。例如，你可以在根目录的 package.json 中定义一些脚本来批量执行工作区中的任务：
+
+[source,json]
+----
+{
+  "scripts": {
+    "test": "pnpm -r test",
+    "build": "pnpm -r build"
+  }
+}
+----
+
+这里，-r 参数表示递归执行，pnpm -r test 会在工作区的所有包中执行 test 脚本，pnpm -r build 会在所有包中执行 build 脚本。
+
+=== 使用 pnpm workspace 的好处
+
+* 提高效率：通过共享依赖和使用符号链接，pnpm workspace 大大减少了磁盘空间的占用和安装时间。
+* 跨包协作：你可以轻松地在多个包之间共享和管理依赖，避免重复安装相同的依赖。
+* 简化管理：在一个仓库中管理多个包，使得依赖和版本的管理变得更加简单。
+* 统一配置：所有的包共享一个统一的根目录配置，可以方便地执行脚本和管理任务。
+
+=== pnpm workspace 与其他工具的结合
+
+pnpm workspace 可以和其他工具一起使用，以进一步提高工作区管理的效率和灵活性。例如：
+
+* Turborepo：可以结合 pnpm workspace 使用，Turbo 用于优化构建过程，减少不必要的构建工作。
+* Lerna：pnpm workspace 也可以和 Lerna 一起使用，Lerna 用于管理多个包的版本和发布。
+
+=== 总结
+
+pnpm workspace 是 pnpm 提供的一种非常强大的功能，用于管理 monorepo 项目。它通过共享依赖、符号链接和简化的包管理流程，帮助开发者更高效地管理和协作多个包。通过与其他工具（如 Turbo 或 Lerna）的结合，pnpm workspace 可以为 monorepo 提供更多的构建优化和任务管理功能。

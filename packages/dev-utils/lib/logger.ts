@@ -1,7 +1,14 @@
 import type { ValueOf } from '@extension/shared';
 
+// ColorType 是日志类型的联合类型，表示四种预定义的日志类型 ('success', 'info', 'error', 'warning') 和 COLORS 对象的键（keyof typeof COLORS），
+// 这意味着 ColorType 还可以是 COLORS 中的任何键，如 'FgGreen'，'FgBlue' 等
 type ColorType = 'success' | 'info' | 'error' | 'warning' | keyof typeof COLORS;
 
+/**
+ * 定义了一个 colorLog 函数，用于将不同类型的日志信息打印到控制台，并通过 ANSI 转义码为不同的日志类型设置颜色
+ * @param message
+ * @param type
+ */
 export function colorLog(message: string, type: ColorType) {
   let color: ValueOf<typeof COLORS>;
 
@@ -26,6 +33,8 @@ export function colorLog(message: string, type: ColorType) {
   console.log(color, message);
 }
 
+// COLORS 是一个包含多个 ANSI 转义码的对象，用于设置不同颜色的文本和背景。它使用了 \x1b 字符（ESC 字符）来表示控制台颜色格式。
+// Fg 系列表示前景色（文本颜色），Bg 系列表示背景色。
 const COLORS = {
   Reset: '\x1b[0m',
   Bright: '\x1b[1m',

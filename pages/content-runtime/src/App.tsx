@@ -1,9 +1,13 @@
-import { useEffect } from 'react';
+import { defineComponent, onMounted } from 'vue';
 
-export default function App() {
-  useEffect(() => {
-    console.log('runtime content view loaded');
-  }, []);
+export default defineComponent({
+  name: 'App',
+  setup() {
+    // 等效于 React 的 useEffect
+    onMounted(() => {
+      console.log('runtime content view loaded');
+    });
 
-  return <div className="runtime-content-view-text">runtime content view</div>;
-}
+    return () => <div class="runtime-content-view-text">runtime content view</div>;
+  },
+});

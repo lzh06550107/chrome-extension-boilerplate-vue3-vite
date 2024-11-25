@@ -1,0 +1,292 @@
+= chrome 扩展
+
+== 内容脚本
+
+在浏览器扩展（尤其是 Chrome 扩展）开发中，`ContentScript` 和 `ContentRuntimeScript` 都涉及到在页面中注入和执行 JavaScript，但它们的用途和行为有所不同。以下是它们的主要区别：
+
+=== ContentScript：
+
+* 定义：`ContentScript` 是注入到浏览器页面中的脚本，它在浏览器的 Web 页面环境中运行，而不是在扩展的后台或弹出页中运行。
+* 用途：`ContentScript` 主要用于与网页交互，可以修改页面内容、监听 DOM 变化、获取页面的 DOM 或发起网络请求等。
+* 运行环境：
+** 它在浏览器的 *DOM 环境* 中执行，可以直接访问和操作网页的 DOM。
+** 它与扩展的其他部分（如背景页、弹出窗口）之间没有直接的访问权限。
+** 由于安全限制，`ContentScript` 无法访问网页的 JavaScript 变量或函数，反之亦然。但它可以通过 DOM 与网页进行交互，或者通过消息传递与扩展的其他部分通信。
+
+* 注入方式：在 `manifest.json` 中定义 `content_scripts` 字段来注入脚本。
+
+* 示例：
++
+[source,json]
+----
+{
+  "content_scripts": [
+    {
+      "matches": ["*://example.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ]
+}
+----
+
+* 权限：`ContentScript` 没有直接的扩展权限，因此不能访问某些敏感的浏览器 API。
+
+=== ContentRuntimeScript
+
+* 定义：`ContentRuntimeScript` 是一种通过扩展的背景页或运行时环境动态注入到网页中的脚本。与 `ContentScript` 不同，`ContentRuntimeScript` 不是在页面加载时自动注入，而是通过扩展的 API 在运行时注入。
+* 用途：`ContentRuntimeScript` 主要用于需要通过扩展的背景页或其他运行时逻辑来控制和注入脚本的场景。它通常涉及到更多的权限和更复杂的交互。
+
+* 运行环境：
+** 它通常由扩展的 *背景页* 或 *运行时* 注入。
+** 由于是由扩展的上下文注入，它可能具有比 `ContentScript` 更高的权限，例如访问浏览器的 API、存储、网络请求等。
+* 注入方式：通常通过扩展的运行时 API（如 `chrome.tabs.executeScript`）动态注入。
+* 示例：
+
+[source,javascript]
+----
+chrome.tabs.executeScript(tabId, { file: "contentRuntimeScript.js" });
+----
+
+* 权限：`ContentRuntimeScript` 可以利用扩展的权限访问浏览器 API，因此它可以在特定条件下执行更复杂的操作。
+
+=== 主要区别
+
+[cols="2,4,4"]
+|===
+|特性|ContentScript|ContentRuntimeScript
+
+|注入方式
+|自动注入（通过 manifest.json 配置）
+|动态注入（通过扩展 API 如 chrome.tabs.executeScript）
+
+|运行环境
+|运行在网页的 DOM 环境中，与扩展的其他部分隔离
+|运行在扩展的运行时环境中，可以访问更多的扩展 API
+
+|权限
+|限制访问扩展 API，不能访问敏感浏览器 API
+|可以访问更多的扩展权限和浏览器 API
+
+|用途
+|主要用于修改网页内容，监听 DOM 变化等
+|用于更灵活的操作，通常在扩展的运行时控制下执行任务
+|===
+
+=== 总结：
+
+* `ContentScript` 是浏览器扩展与网页之间的桥梁，它用于直接与页面 DOM 交互，通常用于修改页面内容或收集信息。
+* `ContentRuntimeScript` 更像是一个运行时脚本，通常由扩展的背景页或其他环境动态注入，可以执行更复杂的任务，并利用扩展的权限访问浏览器 API。
+
+== 内容UI
+
+在 Chrome 扩展中，`Content UI` 一般指的是一个内容脚本 (Content Script) 和页面 UI 交互的部分。Chrome 扩展的内容脚本通常用于直接在页面中执行 JavaScript 代码，与网页的 DOM 交互，而 `Content UI` 则是通过这些脚本来展示和操作扩展功能的界面。
+
+=== **内容脚本 (Content Script)**
+
+内容脚本是嵌入到浏览器页面中的 JavaScript 代码，通常用于：
+
+- 与网页 DOM 交互（例如修改页面的内容）。
+- 向页面注入样式或脚本。
+- 监听页面事件，并响应扩展的功能请求。
+
+通常，内容脚本会在扩展的 `manifest.json` 文件中进行声明。例如：
+
+```json
+{
+  "manifest_version": 3,
+  "name": "My Chrome Extension",
+  "version": "1.0",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ]
+}
+```
+
+这表示 `content.js` 和 `content.css` 文件会在匹配的网页中运行。
+
+=== **Content UI 的使用**
+
+在 Chrome 扩展中，Content UI 通常是指通过内容脚本注入到网页中的用户界面元素。这些元素可以是 HTML、CSS 或 JavaScript 组件，可以与扩展的后台逻辑进行交互。
+
+==== 示例：内容脚本创建 Content UI
+
+1. **在页面中注入 UI**：
+内容脚本可以通过直接操作 DOM 来将扩展的 UI 添加到页面中。例如，你可以通过 JavaScript 创建一个按钮，并将其插入到页面的某个位置。
++
+`content.js`：
++
+```javascript
+// 创建一个按钮并添加到页面的右上角
+const button = document.createElement('button');
+button.textContent = 'Click me';
+button.style.position = 'fixed';
+button.style.top = '20px';
+button.style.right = '20px';
+button.style.zIndex = 1000;
+document.body.appendChild(button);
+
+// 给按钮添加事件处理器
+button.addEventListener('click', () => {
+  alert('Button clicked!');
+});
+```
+
+2. **注入自定义样式**：
+内容脚本还可以注入自定义的 CSS 样式，改变页面的外观，或者为按钮、面板等 UI 元素设置样式。
++
+`content.css`：
++
+```css
+/* 给注入的按钮设置样式 */
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+```
+
+3. **与背景脚本或弹出页面交互**：
+如果需要与扩展的其他部分进行通信，内容脚本可以通过 Chrome 的 `runtime` 或 `message` API 与背景脚本或弹出窗口进行数据交换。
++
+`content.js`（发送消息到背景脚本）：
++
+```javascript
+// 发送消息给背景脚本
+chrome.runtime.sendMessage({ action: 'buttonClicked' }, (response) => {
+  console.log('Response from background script:', response);
+});
+```
++
+`background.js`（接收消息）：
++
+```javascript
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'buttonClicked') {
+    sendResponse('Button was clicked in content script');
+  }
+});
+```
+
+=== **Content UI 的高级使用**
+
+- **UI 组件库**：有时扩展开发者会使用一些 UI 组件库（如 React 或 Vue.js）来构建内容脚本中的界面。你可以通过在内容脚本中注入组件来构建更复杂的 UI。
+
+- **React 或 Vue.js 与 Content Script**：你可以使用 React 或 Vue.js 来构建复杂的 UI 组件，并将这些组件渲染到网页中。这需要将 React/Vue 代码打包并注入到页面中。
+
+=== **与 Chrome 扩展的权限系统配合**
+
+Content UI 通常也会与扩展的权限系统配合使用，确保扩展能在网页中执行必要的操作。例如，某些页面可能需要请求特定的权限才能访问或修改页面内容。你可以通过 `permissions` 和 `host_permissions` 在 `manifest.json` 中声明权限。
+
+```json
+{
+  "permissions": ["activeTab"],
+  "host_permissions": ["http://*/*", "https://*/*"]
+}
+```
+
+这样，扩展就可以在当前选项卡上执行内容脚本，并修改页面 UI。
+
+=== 总结
+
+在 Chrome 扩展中，`Content UI` 是指通过内容脚本向页面注入的用户界面元素。它可以是简单的按钮或复杂的交互式界面，内容脚本负责与页面 DOM 交互并展示 UI，而这些 UI 元素可以与扩展的其他部分（如背景脚本）进行通信，从而实现更复杂的功能。
+
+== devtools
+
+在 Chrome 扩展开发中，`devtools` 和 `devtools-panel` 相关的功能通常用于在浏览器的开发者工具（DevTools）中扩展 Chrome 的功能，但它们的用途和工作方式略有不同。
+
+=== **`devtools`**
+
+`devtools` 是 Chrome 扩展中的一类功能，允许开发者在 Chrome 的开发者工具中扩展或修改默认的面板。`devtools` 一般指的是 Chrome 扩展通过注入 JavaScript 和 HTML，定制开发者工具的行为和显示的内容。
+
+==== 使用场景
+
+- **自定义面板**：通过 `devtools` API，扩展可以向 Chrome 开发者工具中添加自定义的面板、工具栏按钮、或者命令。
+- **与网页交互**：`devtools` 允许扩展和正在开发的网页之间进行交互，比如从网页中提取信息并显示在开发者工具中。
++
+相关配置（manifest.json）示例：
++
+```json
+{
+  "manifest_version": 3,
+  "name": "My DevTools Extension",
+  "version": "1.0",
+  "devtools_page": "devtools.html"
+}
+```
+
+- `devtools_page`：指定一个 HTML 文件，这个文件会被加载到 Chrome 的开发者工具中。
+
+==== 示例功能
+
+假设你要创建一个自定义的 DevTools 面板，可以通过编写一个 `devtools.html` 页面，来向 DevTools 添加一个新的面板。`devtools.js` 文件中将定义面板的行为。
+
+`devtools.html`：
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My DevTools Panel</title>
+  </head>
+  <body>
+    <h1>Welcome to My Custom Panel</h1>
+    <div id="content"></div>
+    <script src="devtools.js"></script>
+  </body>
+</html>
+```
+
+`devtools.js`：
+```javascript
+chrome.devtools.panels.create(
+  "My Panel", // Panel name
+  null, // Icon (null for default)
+  "panel.html", // HTML for the panel
+  function(panel) {
+    // Panel created callback
+    console.log("Panel created");
+  }
+);
+```
+
+=== **`devtools-panel`**
+
+`devtools-panel` 其实是 `devtools` 功能的具体实现之一，专门用于在 Chrome 开发者工具的面板中创建自定义面板。它是 `devtools` 中的一个组成部分，侧重于通过 `chrome.devtools.panels` API 提供的接口来控制和管理面板。
+
+==== 使用场景
+
+- **添加自定义面板**：通过 `devtools-panel`，你可以将自己的工具、数据、功能添加到开发者工具中。例如，显示网页的性能数据、网络请求、控制台输出等。
+- **与网页或背景脚本交互**：与网页内容或后台脚本共享数据，并显示在开发者工具的面板中。
+
+==== 示例：
+```javascript
+chrome.devtools.panels.create(
+  "My Custom Panel", // Panel name
+  null, // Optional icon path
+  "panel.html", // The page that will be displayed in the panel
+  function(panel) {
+    console.log("Custom panel added to DevTools!");
+  }
+);
+```
+
+=== 主要区别
+
+- **`devtools`**：是一个广泛的术语，指代可以在 Chrome 开发者工具中使用的扩展功能。它不仅可以用于面板，也可以用于调试、控制台和其他开发者工具功能的扩展。
+
+- **`devtools-panel`**：通常指的是具体创建和管理开发者工具面板的功能，它是 `devtools` 功能的一个子集，专注于为 Chrome 开发者工具添加自定义面板。
+
+=== 总结
+
+- `devtools` 用于扩展 Chrome 开发者工具的各种功能，支持面板、命令等多种交互方式。
+- `devtools-panel` 是 `devtools` 功能中专门用来创建和管理开发者工具面板的部分，允许开发者将自定义界面显示在 DevTools 面板中。

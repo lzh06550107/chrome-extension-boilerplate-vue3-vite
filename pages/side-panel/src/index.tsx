@@ -1,14 +1,16 @@
-import { createRoot } from 'react-dom/client';
 import '@src/index.css';
 import SidePanel from '@src/SidePanel';
+import { defineComponent, createApp } from 'vue';
+
+const App = defineComponent({
+  name: 'App',
+  setup() {
+    return () => <SidePanel />;
+  },
+});
 
 function init() {
-  const appContainer = document.querySelector('#app-container');
-  if (!appContainer) {
-    throw new Error('Can not find #app-container');
-  }
-  const root = createRoot(appContainer);
-  root.render(<SidePanel />);
+  createApp(App).mount('#app-container');
 }
 
 init();

@@ -1,9 +1,12 @@
 {
   "extends": "@extension/tsconfig/utils",
   "compilerOptions": {
+    // https://cn.vuejs.org/guide/extras/render-function#jsx-type-inference
+    "jsx": "preserve",
+    "jsxImportSource": "vue", // 告诉编译器这是 Vue 的 JSX
     "baseUrl": ".",
     "outDir": "dist",
-    "types": ["chrome"]
+    "types": ["chrome", "vue"] // 引入 Vue 和 Vite 的类型声明
   },
-  "include": ["index.ts", "lib"]
+  "include": ["index.ts", "lib", "../../vite-env.d.ts"]
 }

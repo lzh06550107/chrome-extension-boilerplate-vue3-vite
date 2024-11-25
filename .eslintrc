@@ -1,4 +1,6 @@
 {
+  "root": true,
+  // 确保此配置为根配置
   "env": {
     "browser": true,
     "es6": true,
@@ -7,14 +9,15 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:vue/vue3-recommended",
-    // Vue 3 推荐规则
+    "plugin:vue/vue3-recommended", // Vue 3 推荐规则
     "plugin:import/recommended",
+    "plugin:jsx-a11y/recommended",
     "plugin:tailwindcss/recommended",
     "prettier"
   ],
-  "parser": "@typescript-eslint/parser",
+  "parser": "vue-eslint-parser",
   "parserOptions": {
+    "parser": "@typescript-eslint/parser",
     "ecmaFeatures": {
       "jsx": true
     },
@@ -27,10 +30,11 @@
     "import",
     "prettier"
   ],
-
   "rules": {
     "import/no-unresolved": "off",
-    "@typescript-eslint/consistent-type-imports": "error"
+    "@typescript-eslint/consistent-type-imports": "error",
+    // 如果你遇到 `defineComponent` 未找到的问题，可以禁用规则
+    "import/named": "off"  // 禁用 import/named 规则
   },
   "globals": {
     "chrome": "readonly"
@@ -38,5 +42,16 @@
   "ignorePatterns": [
     "watch.js",
     "dist/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.vue",
+        "*.d.ts",
+        "*.json"
+      ]
+    }
   ]
 }

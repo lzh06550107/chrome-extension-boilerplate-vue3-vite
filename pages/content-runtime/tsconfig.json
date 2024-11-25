@@ -5,7 +5,13 @@
     "paths": {
       "@src/*": ["src/*"]
     },
-    "types": ["chrome", "../../vite-env.d.ts"]
+    "jsxImportSource": "vue", // 使用 Vue 的 JSX 转换器
+    "types": ["chrome", "vue", "../../vite-env.d.ts"],
+    "plugins": [
+      {
+        "name": "@vuedx/typescript-plugin-vue"
+      }
+    ]
   },
   "include": ["src"]
 }
