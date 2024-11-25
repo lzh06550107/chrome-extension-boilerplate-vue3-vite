@@ -50,7 +50,7 @@
 
 ## Intro <a name="intro"></a>
 
-这个模板是为了使用 React 和 TypeScript 创建 Chrome 扩展而制作的。
+这个模板是为了使用 Vue3 和 TypeScript 创建 Chrome 扩展而制作的。
 
 > 其重点是通过 Vite（Rollup）和 Turborepo 提高构建速度和开发体验。
 
