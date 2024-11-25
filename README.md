@@ -56,7 +56,7 @@
 
 ## 功能 <a name="features"></a>
 
-- [React18](https://reactjs.org/)
+- [vue3](https://vuejs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwindcss](https://tailwindcss.com/)
 - [Vite](https://vitejs.dev/)
