@@ -6,7 +6,7 @@ import '@src/SidePanel.css';
 const SidePanel = defineComponent({
   name: 'SidePanel',
   setup() {
-    const theme = useStorage(exampleThemeStorage);
+    const { data: theme } = useStorage(exampleThemeStorage);
     const isLight = computed(() => theme.value === 'light');
     const logo = computed(() => (isLight.value ? 'side-panel/logo_vertical.svg' : 'side-panel/logo_vertical_dark.svg'));
 
@@ -39,7 +39,7 @@ const ToggleButton = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const theme = useStorage(exampleThemeStorage);
+    const { data: theme } = useStorage(exampleThemeStorage);
     const buttonClass = computed(() => {
       return (
         `${props.className} ` +
@@ -48,12 +48,8 @@ const ToggleButton = defineComponent({
       );
     });
 
-    const handleClick = () => {
-      exampleThemeStorage.toggle();
-    };
-
     return () => (
-      <button class={buttonClass.value} onClick={handleClick}>
+      <button class={buttonClass.value} onClick={exampleThemeStorage.toggle}>
         {slots.default ? slots.default() : ''}
       </button>
     );

@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted } from 'vue';
 import { Button } from '@extension/ui';
 import { useStorage, withErrorBoundary, withSuspense } from '@extension/shared';
 import { exampleThemeStorage } from '@extension/storage';
@@ -11,15 +11,8 @@ const NewTab = defineComponent({
   setup() {
     // 使用 useStorage 获取主题
     const { data: theme } = useStorage(exampleThemeStorage);
-    const isLight = ref(theme.value === 'light'); // 判断当前主题
-    const logo = ref(isLight.value ? 'new-tab/logo_horizontal.svg' : 'new-tab/logo_horizontal_dark.svg');
-
-    // 切换主题
-    const toggleTheme = () => {
-      exampleThemeStorage.toggle();
-      isLight.value = !isLight.value; // 切换主题后的更新
-      logo.value = isLight.value ? 'new-tab/logo_horizontal.svg' : 'new-tab/logo_horizontal_dark.svg';
-    };
+    const isLight = computed(() => theme.value === 'light'); // 判断当前主题
+    const logo = computed(() => (isLight.value ? 'new-tab/logo_horizontal.svg' : 'new-tab/logo_horizontal_dark.svg'));
 
     // 打开 Github
     const goGithubSite = () => {
@@ -35,7 +28,6 @@ const NewTab = defineComponent({
       theme,
       isLight,
       logo,
-      toggleTheme,
       goGithubSite,
     };
   },
@@ -50,7 +42,7 @@ const NewTab = defineComponent({
             Edit <code>pages/new-tab/src/NewTab.tsx</code>
           </p>
           <h6>The color of this paragraph is defined using SASS.</h6>
-          <Button class="mt-4" onClick={this.toggleTheme} theme={this.theme}>
+          <Button className="mt-4" onClick={exampleThemeStorage.toggle} theme={this.theme}>
             {t('toggleTheme')}
           </Button>
         </header>

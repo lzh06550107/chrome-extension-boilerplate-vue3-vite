@@ -9,12 +9,12 @@ const notificationOptions = {
   iconUrl: chrome.runtime.getURL('icon-34.png'),
   title: 'Injecting content script error',
   message: 'You cannot inject script here!',
-} as const;
+};
 
 const Popup = defineComponent({
   name: 'PopupDemo',
   setup() {
-    const theme = useStorage(exampleThemeStorage);
+    const { data: theme } = useStorage(exampleThemeStorage);
     const isLight = computed(() => theme.value === 'light');
     const logo = computed(() => (isLight.value ? 'popup/logo_vertical.svg' : 'popup/logo_vertical_dark.svg'));
 
@@ -76,7 +76,7 @@ const ToggleButton = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const theme = useStorage(exampleThemeStorage);
+    const { data: theme } = useStorage(exampleThemeStorage);
 
     const buttonClass = computed(() => {
       return (

@@ -12,7 +12,7 @@ const ToggleButton = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const theme = useStorage(exampleThemeStorage);
+    const { data: theme } = useStorage(exampleThemeStorage);
 
     const handleToggle = () => {
       exampleThemeStorage.toggle();
@@ -35,7 +35,7 @@ const ToggleButton = defineComponent({
 const Panel = defineComponent({
   name: 'PanelDemo',
   setup() {
-    const theme = useStorage(exampleThemeStorage);
+    const { data: theme } = useStorage(exampleThemeStorage);
     const isLight = computed(() => theme.value === 'light');
     const logo = computed(() =>
       isLight.value ? 'devtools-panel/logo_horizontal.svg' : 'devtools-panel/logo_horizontal_dark.svg',

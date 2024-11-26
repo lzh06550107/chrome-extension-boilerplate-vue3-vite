@@ -6,30 +6,13 @@
     <img alt="Logo" src="https://github.com/user-attachments/assets/99cb6303-64e4-4bed-bf3f-35735353e6de" />
 </picture>
 
-![](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
+![](https://img.shields.io/badge/Vue-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
 ![](https://img.shields.io/badge/Typescript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![](https://badges.aleen42.com/src/vitejs.svg)
 
-![GitHub action badge](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite/actions/workflows/build-zip.yml/badge.svg)
-![GitHub action badge](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite/actions/workflows/lint.yml/badge.svg)
-
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/Jonghakseo/chrome-extension-boilerplate-react-viteFactions&count_bg=%23#222222&title_bg=%23#454545&title=😀&edge_flat=true" alt="hits"/>
-<a href="https://discord.gg/4ERQ6jgV9a" target="_blank"><img src="https://discord.com/api/guilds/1263404974830915637/widget.png"/></a>
-
-> This boilerplate
-> has [Legacy version](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite/tree/legacy)
-
 </div>
 
-> [!NOTE]
-> This project is listed in the [Awesome Vite](https://github.com/vitejs/awesome-vite)
-
-> [!TIP]
-> Share storage state between all pages
->
-> https://github.com/user-attachments/assets/3b8e189f-6443-490e-a455-4f9570267f8c
-
-## Table of Contents
+## 目录
 
 - [Intro](#intro)
 - [Features](#features)
@@ -43,10 +26,7 @@
 - [Install dependency](#install-dependency)
     - [For root](#install-dependency-for-root)
     - [For module](#install-dependency-for-module)
-- [Community](#community)
 - [Reference](#reference)
-- [Star History](#star-history)
-- [Contributors](#contributors)
 
 ## Intro <a name="intro"></a>
 
@@ -170,13 +150,6 @@
 - `popup` - Chrome 扩展的 [popup](https://developer.chrome.com/docs/extensions/reference/browserAction/)（manifest.json 中是 `action.default_popup`）
 - `side-panel` - Chrome 扩展的侧边面板 [sidepanel(Chrome 114+)](https://developer.chrome.com/docs/extensions/reference/sidePanel/)（manifest.json 中是 `side_panel.default_path`）
 
-## Community <a name="community"></a>
-
-To chat with other community members, you can join the [Discord](https://discord.gg/4ERQ6jgV9a) server.
-You can ask questions on that server, and you can also help others.
-
-Also, suggest new features or share any challenges you've faced while developing Chrome extensions!
-
 ## Reference <a name="reference"></a>
 
 - [Vite Plugin](https://vitejs.dev/guide/api-plugin.html)
@@ -184,6 +157,7 @@ Also, suggest new features or share any challenges you've faced while developing
 - [Rollup](https://rollupjs.org/guide/en/)
 - [Turborepo](https://turbo.build/repo/docs)
 - [Rollup-plugin-chrome-extension](https://www.extend-chrome.dev/rollup-plugin)
+- [chrome-extension-boilerplate-react-vite](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite)
 
 ## Turborepo 
 
@@ -208,8 +182,4 @@ Turborepo 通常用于管理多个模块或包的项目，特别是在大型项�
 | **通信**       | 通过消息传递与后台页或弹出窗口通信                      | 通过消息传递与内容脚本、弹出窗口、或其他后台部分通信                      |
 | **权限**       | 访问网页的 DOM 和 JS，但不具备扩展权限                  | 具备访问扩展 API 和浏览器权限，管理全局设置和存储                         |
 
-
-## 参考
-
-- https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite
 

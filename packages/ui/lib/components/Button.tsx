@@ -1,12 +1,6 @@
 import { defineComponent, h, type PropType } from 'vue';
 import { cn } from '../utils';
 
-type ButtonProps = {
-  theme?: 'light' | 'dark';
-  className?: string;
-  children: any;
-};
-
 type Theme = 'light' | 'dark';
 
 export const Button = defineComponent({
@@ -20,16 +14,12 @@ export const Button = defineComponent({
       type: String,
       default: '',
     },
-    children: {
-      type: [String, Object, Array] as PropType<any>, // React children type
-      default: () => [],
-    },
     onClick: {
       type: Function as PropType<(event: MouseEvent) => void>,
       default: undefined,
     },
   },
-  setup(props: ButtonProps, { attrs }) {
+  setup(props, { slots }) {
     return () => (
       <button
         class={cn(
@@ -37,9 +27,8 @@ export const Button = defineComponent({
           'py-1 px-4 rounded shadow hover:scale-105',
           props.theme === 'light' ? 'bg-white text-black' : 'bg-black text-white',
         )}
-        {...attrs} // to pass down other attributes (like event handlers)
-      >
-        {props.children}
+        onClick={props.onClick}>
+        {slots.default ? slots.default() : 'toggleTheme'}
       </button>
     );
   },
