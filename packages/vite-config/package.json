@@ -13,7 +13,7 @@
     "@extension/hmr": "workspace:*",
     "@extension/tsconfig": "workspace:*",
     "@vitejs/plugin-vue": "5.2.0",
-    "@vitejs/plugin-vue-jsx": "4.1.0",
+    "@vitejs/plugin-vue-jsx": "4.1.1",
     "@vue/compiler-sfc": "3.5.13",
     "deepmerge": "^4.3.1"
   }
